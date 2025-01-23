@@ -12,32 +12,40 @@ public class PlayerController : MonoBehaviour
         inputActions = new RhythmInputActions();
     }
 
+    private event System.Action<InputAction.CallbackContext> onUpPressed;
+    private event System.Action<InputAction.CallbackContext> onDownPressed;
+    private event System.Action<InputAction.CallbackContext> onLeftPressed;
+    private event System.Action<InputAction.CallbackContext> onRightPressed;
+
     private void OnEnable()
     {
-        
+        onUpPressed = ctx => HandleKeyPress("Up");
+        onDownPressed = ctx => HandleKeyPress("Down");
+        onLeftPressed = ctx => HandleKeyPress("Left");
+        onRightPressed = ctx => HandleKeyPress("Right");
+
+        inputActions.interact.Up.performed += onUpPressed;
+        inputActions.interact.Down.performed += onDownPressed;
+        inputActions.interact.Left.performed += onLeftPressed;
+        inputActions.interact.Right.performed += onRightPressed;
+
         inputActions.interact.Up.Enable();
         inputActions.interact.Down.Enable();
         inputActions.interact.Left.Enable();
         inputActions.interact.Right.Enable();
-
-        inputActions.interact.Up.performed += ctx => HandleKeyPress("Up");
-        inputActions.interact.Down.performed += ctx => HandleKeyPress("Down");
-        inputActions.interact.Left.performed += ctx => HandleKeyPress("Left");
-        inputActions.interact.Right.performed += ctx => HandleKeyPress("Right");
     }
 
     private void OnDisable()
     {
-        
+        inputActions.interact.Up.performed -= onUpPressed;
+        inputActions.interact.Down.performed -= onDownPressed;
+        inputActions.interact.Left.performed -= onLeftPressed;
+        inputActions.interact.Right.performed -= onRightPressed;
+
         inputActions.interact.Up.Disable();
         inputActions.interact.Down.Disable();
         inputActions.interact.Left.Disable();
         inputActions.interact.Right.Disable();
-
-        inputActions.interact.Up.performed -= ctx => HandleKeyPress("Up");
-        inputActions.interact.Down.performed -= ctx => HandleKeyPress("Down");
-        inputActions.interact.Left.performed -= ctx => HandleKeyPress("Left");
-        inputActions.interact.Right.performed -= ctx => HandleKeyPress("Right");
     }
 
     private void HandleKeyPress(string key)
