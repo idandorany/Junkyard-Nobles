@@ -1,21 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "Rhythm", menuName = "Scriptable Objects/Rhythm")]
-public class Rhythm : ScriptableObject
+public class Rhythm : MonoBehaviour
 {
-    public List<Note> notes;
+    public List<Notes> notes;
+    private int _inNoteCounter;
 
-    public bool IsMatchingNote(Note note, int index)
+    public bool IsMatchingInput(ArrowKey arrowKey, int index)
     {
         if (index >= notes.Count) return false;
 
-        return notes[index] == note;
+        var isMatchingInput = notes[index].inputSequence[_inNoteCounter] == arrowKey;
+
+        if (!isMatchingInput) return false;
+        
+        ++_inNoteCounter;
+        
+        return true;
+    }
+
+    public bool IsEndOfStep(int index)
+    {
+        var isEndOfStep = _inNoteCounter > notes[index].inputSequence.Count;
+        
+        if (isEndOfStep)
+            _inNoteCounter = 0;
+
+        return isEndOfStep;
     }
 }
-
-public enum Note
-{
-    // The whole 4-6 notes will be here.
-} 

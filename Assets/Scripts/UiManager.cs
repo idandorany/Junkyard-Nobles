@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class UiManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private GameManager gameManager;
+    
     void Start()
     {
         
