@@ -12,5 +12,5 @@ EditorBuildSettings:
     path: Assets/Scenes/Idan.unity
     guid: 0d4ff07ea5d0c6742a40abbf5f94eaf7
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 132faf65d917420478167bce5f078577, type: 3}
   m_UseUCBPForAssetBundles: 0
