@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Rhythm : MonoBehaviour
@@ -29,5 +30,15 @@ public class Rhythm : MonoBehaviour
             _inNoteCounter = 0;
 
         return isEndOfStep;
+    }
+
+    public bool IsEndOfRhythm(int index)
+    {
+        return index >= notes.Count;
+    }
+
+    public AudioClip GetNoteClip(int index)
+    {
+        return index >= notes.Count ? null : notes[index].noteAudioClip;
     }
 }
