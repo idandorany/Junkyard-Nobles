@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class Note : MonoBehaviour
 {
-    [SerializeField] private NotesScriptable notesScriptable;
     public List<ArrowKey> inputSequence;
+    
+    [SerializeField] private NotesScriptable notesScriptable;
+    public AudioClip noteAudioClip;
     
     void Start()
     {
