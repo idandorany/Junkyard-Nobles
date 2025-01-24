@@ -30,4 +30,9 @@ public class Rhythm : MonoBehaviour
 
         return isEndOfStep;
     }
+
+    public bool IsEndOfRhythm(int index)
+    {
+        return index >= notes.Count;
+    }
 }
