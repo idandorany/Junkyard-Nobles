@@ -1,3 +1,4 @@
+using Audio;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
     //class references
     [SerializeField] private PlayerController playerController;
     [SerializeField] private UiManager uiManager;
+    [SerializeField] private AudioManager audioManager;
     
     //player progression track
     private GameState _gameState;
@@ -19,9 +21,11 @@ public class GameManager : MonoBehaviour
     private float _timer;
     
     //events 
-    private event UnityAction OnRhythmSectionStart;
-    private event UnityAction OnRhythmSectionFail;
-    private event UnityAction OnRhythmSectionWin;
+    public event UnityAction OnRhythmSectionStart;
+    public event UnityAction OnRhythmSectionFail;
+    public event UnityAction<int> OnRhythmSectionWin;
+    public event UnityAction<AudioClip> OnNoteSuccession;
+    public event UnityAction OnInputSuccession;
     
     private event UnityAction OnGameWin;
 
@@ -29,11 +33,6 @@ public class GameManager : MonoBehaviour
     {
         //event subscriptions
         SubscribeToInputSystem();
-    }
-    
-    void start()
-    {
-        _gameState = GameState.LevelOne;
     }
 
     void OnDisable()
@@ -56,41 +55,38 @@ public class GameManager : MonoBehaviour
         playerController.OnRightPressed -= CheckInputRight;
         playerController.OnLeftPressed -= CheckInputLeft;
     }
-
-    
     
     private void PlayerPassedRhythm()
     {
-        _gameState++;
-        if (_gameState == GameState.LevelMax)
+        switch (_gameState)
         {
-            InvokeOnGameWin();
+            case GameState.LevelOne:
+                OnRhythmSectionWin?.Invoke(0);
+                ++_gameState;
+                break;
+            case GameState.LevelTwo:
+                OnRhythmSectionWin?.Invoke(1);
+                ++_gameState;
+                break;
+            case GameState.LevelThree:
+                OnRhythmSectionWin?.Invoke(2);
+                ++_gameState;
+                break;
+            case GameState.LevelFour:
+                OnRhythmSectionWin?.Invoke(3);
+                ++_gameState;
+                break;
+            case GameState.LevelFive:
+                OnRhythmSectionWin?.Invoke(4);
+                ++_gameState;
+                break;
+            case GameState.LevelMax:
+                OnGameWin?.Invoke();
+                break;
         }
-        else
-        {
-            isInRhythmicMode = false;
-            UnsubscribeToInputSystem();
-        }
-    }
-    
-    
-    public void InvokeOnRhythmSectionStart()
-    {
-        OnRhythmSectionStart?.Invoke();
-    }
-    public void InvokeOnRhythmSectionFail()
-    {
-        OnRhythmSectionFail?.Invoke();
-    }
-    public void InvokeOnRhythmSectionWin()
-    {
-        OnRhythmSectionWin?.Invoke();
-    }
-    public void InvokeOnGameWin()
-    {
-        OnGameWin?.Invoke();
-    }
 
+        _rhythmsIndex = 0;
+    }
     
     public void CheckInputUp()
     {
@@ -98,21 +94,24 @@ public class GameManager : MonoBehaviour
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
-            
+            OnInputSuccession?.Invoke();
         }
         else
         {
-            InvokeOnRhythmSectionFail();
+            OnRhythmSectionFail?.Invoke();
+            return;
         }
 
-        if (!_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex)) return;
+        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        {
+            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            ++_rhythmsIndex;
+        }
         
         if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
             PlayerPassedRhythm();
-            return;
         }
-        ++_rhythmsIndex;
     }
     public void CheckInputDown()
     {
@@ -120,18 +119,21 @@ public class GameManager : MonoBehaviour
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
-            
+            OnInputSuccession?.Invoke();
         }
         else
         {
-            InvokeOnRhythmSectionFail();
+            OnRhythmSectionFail?.Invoke();
+            return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex)) return;
+        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        {
+            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+        }
         
         if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
-            InvokeOnRhythmSectionWin();
             PlayerPassedRhythm();
             return;
         }
@@ -143,14 +145,18 @@ public class GameManager : MonoBehaviour
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
-            
+            OnInputSuccession?.Invoke();
         }
         else
         {
-            InvokeOnRhythmSectionFail();
+            OnRhythmSectionFail?.Invoke();
+            return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex)) return;
+        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        {
+            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+        }
         
         if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
@@ -165,14 +171,18 @@ public class GameManager : MonoBehaviour
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
-            
+            OnInputSuccession?.Invoke();
         }
         else
         {
-            InvokeOnRhythmSectionFail();
+            OnRhythmSectionFail?.Invoke();
+            return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex)) return;
+        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        {
+            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+        }
         
         if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
@@ -189,6 +199,7 @@ public class GameManager : MonoBehaviour
         LevelTwo,
         LevelThree,
         LevelFour,
+        LevelFive,
         LevelMax,
     }
 }
