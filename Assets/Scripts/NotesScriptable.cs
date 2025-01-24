@@ -13,4 +13,5 @@ public enum ArrowKey
     ArrowDown,
     ArrowRight,
     ArrowLeft,
+    ArrowNone,
 } 

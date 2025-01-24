@@ -31,7 +31,8 @@ namespace Audio
 
         public void PlayPopBubbleAudio()
         {
-            audioSource.PlayOneShot(popUpBubble);
+            if(popUpBubble)
+                audioSource.PlayOneShot(popUpBubble);
         }
 
         public void PlayRhythmAudio(int index)

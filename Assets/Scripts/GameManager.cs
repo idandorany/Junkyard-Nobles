@@ -1,24 +1,31 @@
+using System.Collections.Generic;
 using Audio;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     //class references
+    [Header("Managers & Player")]
     [SerializeField] private PlayerController playerController;
     [SerializeField] private UiManager uiManager;
     [SerializeField] private AudioManager audioManager;
     
+    [Header("Triggers")]
+    [SerializeField] private TriggerEnter triggerEnter;
+    [SerializeField] private TriggerExitLose triggerExitLose;
+    
     //player progression track
     private GameState _gameState;
-    bool isInRhythmicMode;
     
     //rhythm variables
-    [SerializeField] private Rhythm[] _rhythms;
+    [SerializeField] private Rhythm[] rhythms;
     private int _rhythmsIndex;
-    [SerializeField]private float _maxTimer;
+    [SerializeField] private float maxTimer;
     private float _timer;
+    private ArrowKey _triggeredArrow = ArrowKey.ArrowNone;
+    private Queue<ArrowTrigger> _arrows = new Queue<ArrowTrigger>();
     
     //events 
     public event UnityAction OnRhythmSectionStart;
@@ -33,12 +40,14 @@ public class GameManager : MonoBehaviour
     {
         //event subscriptions
         SubscribeToInputSystem();
+        triggerExitLose.LoseEvent += TriggerLose;
     }
 
     void OnDisable()
     {
         //event unsubscription
         UnsubscribeToInputSystem();
+        triggerExitLose.LoseEvent -= TriggerLose;
     }
 
     private void SubscribeToInputSystem()
@@ -90,11 +99,18 @@ public class GameManager : MonoBehaviour
     
     public void CheckInputUp()
     {
-        var isMatchingInput = _rhythms[(int)_gameState].IsMatchingInput(ArrowKey.ArrowUp, _rhythmsIndex);
+        var arrow = ArrowKey.ArrowUp;
+        if(_arrows.Count > 0)
+            _triggeredArrow = _arrows.Peek().GetArrowKey();
+        var isMatchingInput = rhythms[(int)_gameState].IsMatchingInput(arrow, _rhythmsIndex)
+                              && arrow == _triggeredArrow;
+        
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
             OnInputSuccession?.Invoke();
+            var arrowTrigger = _arrows.Dequeue();
+            Destroy(arrowTrigger.gameObject);
         }
         else
         {
@@ -102,24 +118,30 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
         {
-            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            OnNoteSuccession?.Invoke(rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
             ++_rhythmsIndex;
         }
         
-        if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
             PlayerPassedRhythm();
         }
     }
     public void CheckInputDown()
     {
-        var isMatchingInput = _rhythms[(int)_gameState].IsMatchingInput(ArrowKey.ArrowDown, _rhythmsIndex);
-        Debug.Log(isMatchingInput ? "Good!" : "Bad!");
+        var arrow = ArrowKey.ArrowDown;
+        if(_arrows.Count > 0)
+            _triggeredArrow = _arrows.Peek().GetArrowKey();
+        var isMatchingInput = rhythms[(int)_gameState].IsMatchingInput(arrow, _rhythmsIndex)
+                              && arrow == _triggeredArrow;
+        
         if (isMatchingInput)
         {
             OnInputSuccession?.Invoke();
+            var arrowTrigger = _arrows.Dequeue();
+            Destroy(arrowTrigger.gameObject);
         }
         else
         {
@@ -127,25 +149,31 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
         {
-            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            OnNoteSuccession?.Invoke(rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            ++_rhythmsIndex;
         }
         
-        if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
             PlayerPassedRhythm();
-            return;
         }
-        ++_rhythmsIndex;
     }
     public void CheckInputRight()
     {
-        var isMatchingInput = _rhythms[(int)_gameState].IsMatchingInput(ArrowKey.ArrowRight, _rhythmsIndex);
+        var arrow = ArrowKey.ArrowRight;
+        if(_arrows.Count > 0)
+            _triggeredArrow = _arrows.Peek().GetArrowKey();
+        var isMatchingInput = rhythms[(int)_gameState].IsMatchingInput(arrow, _rhythmsIndex)
+                              && arrow == _triggeredArrow;
+        Debug.Log(_triggeredArrow);
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
             OnInputSuccession?.Invoke();
+            var arrowTrigger = _arrows.Dequeue();
+            Destroy(arrowTrigger.gameObject);
         }
         else
         {
@@ -153,25 +181,31 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
         {
-            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            OnNoteSuccession?.Invoke(rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            ++_rhythmsIndex;
         }
         
-        if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
             PlayerPassedRhythm();
-            return;
         }
-        ++_rhythmsIndex;
     }
     public void CheckInputLeft()
     {
-        var isMatchingInput = _rhythms[(int)_gameState].IsMatchingInput(ArrowKey.ArrowLeft, _rhythmsIndex);
+        var arrow = ArrowKey.ArrowLeft;
+        if(_arrows.Count > 0)
+            _triggeredArrow = _arrows.Peek().GetArrowKey();
+        var isMatchingInput = rhythms[(int)_gameState].IsMatchingInput(arrow, _rhythmsIndex)
+                              && arrow == _triggeredArrow;
+        Debug.Log(_triggeredArrow);
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
         if (isMatchingInput)
         {
             OnInputSuccession?.Invoke();
+            var arrowTrigger = _arrows.Dequeue();
+            Destroy(arrowTrigger.gameObject);
         }
         else
         {
@@ -179,19 +213,28 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
         {
-            OnNoteSuccession?.Invoke(_rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            OnNoteSuccession?.Invoke(rhythms[(int)_gameState].GetNoteClip(_rhythmsIndex));
+            ++_rhythmsIndex;
         }
         
-        if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
+        if (rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
             PlayerPassedRhythm();
-            return;
         }
-        ++_rhythmsIndex;
     }
-    
+
+    public void AddToQueue(ArrowTrigger arrowTrigger)
+    {
+        if(arrowTrigger)
+            _arrows.Enqueue(arrowTrigger);
+    }
+
+    public void TriggerLose()
+    {
+        OnRhythmSectionFail?.Invoke();
+    }
 
     private enum GameState
     {
