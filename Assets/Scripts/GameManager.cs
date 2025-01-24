@@ -67,10 +67,14 @@ public class GameManager : MonoBehaviour
         var isMatchingInput = _rhythms[(int)_gameState].IsMatchingInput(ArrowKey.ArrowUp, _rhythmsIndex);
         Debug.Log(isMatchingInput ? "Good!" : "Bad!");
 
-        if (_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex))
+        if (!_rhythms[(int)_gameState].IsEndOfStep(_rhythmsIndex)) return;
+        
+        if (_rhythms[(int)_gameState].IsEndOfRhythm(_rhythmsIndex))
         {
-            ++_rhythmsIndex;
+            PlayerPassedRhythm();
+            return;
         }
+        ++_rhythmsIndex;
     }
     
     public void CheckInputDown()
