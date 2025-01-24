@@ -3,54 +3,76 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private RhythmInputActions inputActions;
+    private RhythmInputActions _inputActions;
 
-    public event System.Action<string> OnKeyPressed; 
+    public event System.Action OnUpPressed;
+    public event System.Action OnDownPressed;
+    public event System.Action OnLeftPressed;
+    public event System.Action OnRightPressed;
+
+    public event System.Action<string> OnKeyPressed;
 
     private void Awake()
     {
-        inputActions = new RhythmInputActions();
+        _inputActions = new RhythmInputActions();
     }
-
-    private event System.Action<InputAction.CallbackContext> onUpPressed;
-    private event System.Action<InputAction.CallbackContext> onDownPressed;
-    private event System.Action<InputAction.CallbackContext> onLeftPressed;
-    private event System.Action<InputAction.CallbackContext> onRightPressed;
 
     private void OnEnable()
     {
-        onUpPressed = ctx => HandleKeyPress("Up");
-        onDownPressed = ctx => HandleKeyPress("Down");
-        onLeftPressed = ctx => HandleKeyPress("Left");
-        onRightPressed = ctx => HandleKeyPress("Right");
+        // Subscribe to input actions with explicit methods
+        _inputActions.interact.Up.performed += OnUpInput;
+        _inputActions.interact.Down.performed += OnDownInput;
+        _inputActions.interact.Left.performed += OnLeftInput;
+        _inputActions.interact.Right.performed += OnRightInput;
 
-        inputActions.interact.Up.performed += onUpPressed;
-        inputActions.interact.Down.performed += onDownPressed;
-        inputActions.interact.Left.performed += onLeftPressed;
-        inputActions.interact.Right.performed += onRightPressed;
-
-        inputActions.interact.Up.Enable();
-        inputActions.interact.Down.Enable();
-        inputActions.interact.Left.Enable();
-        inputActions.interact.Right.Enable();
+        // Enable input actions
+        _inputActions.interact.Up.Enable();
+        _inputActions.interact.Down.Enable();
+        _inputActions.interact.Left.Enable();
+        _inputActions.interact.Right.Enable();
     }
 
     private void OnDisable()
     {
-        inputActions.interact.Up.performed -= onUpPressed;
-        inputActions.interact.Down.performed -= onDownPressed;
-        inputActions.interact.Left.performed -= onLeftPressed;
-        inputActions.interact.Right.performed -= onRightPressed;
+        // Unsubscribe using explicit methods
+        _inputActions.interact.Up.performed -= OnUpInput;
+        _inputActions.interact.Down.performed -= OnDownInput;
+        _inputActions.interact.Left.performed -= OnLeftInput;
+        _inputActions.interact.Right.performed -= OnRightInput;
 
-        inputActions.interact.Up.Disable();
-        inputActions.interact.Down.Disable();
-        inputActions.interact.Left.Disable();
-        inputActions.interact.Right.Disable();
+        // Disable input actions
+        _inputActions.interact.Up.Disable();
+        _inputActions.interact.Down.Disable();
+        _inputActions.interact.Left.Disable();
+        _inputActions.interact.Right.Disable();
     }
 
-    private void HandleKeyPress(string key)
+    private void OnUpInput(InputAction.CallbackContext _)
     {
-        Debug.Log($"Key Pressed: {key}");
-        OnKeyPressed?.Invoke(key); 
+        HandleKeyPress("Up", OnUpPressed);
+    }
+
+    private void OnDownInput(InputAction.CallbackContext _)
+    {
+        HandleKeyPress("Down", OnDownPressed);
+    }
+
+    private void OnLeftInput(InputAction.CallbackContext _)
+    {
+        HandleKeyPress("Left", OnLeftPressed);
+    }
+
+    private void OnRightInput(InputAction.CallbackContext _)
+    {
+        HandleKeyPress("Right", OnRightPressed);
+    }
+
+    private void HandleKeyPress(string key, System.Action keyEvent)
+    {
+        //Debug.Log($"Key Pressed: {key}");
+        OnKeyPressed?.Invoke(key); // Invoke the generic key event
+        keyEvent?.Invoke();       // Invoke the specific key event
     }
 }
+
+

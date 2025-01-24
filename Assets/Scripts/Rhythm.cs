@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Rhythm : MonoBehaviour
 {
-    public List<Notes> notes;
+    public List<Note> notes;
     private int _inNoteCounter;
 
     public bool IsMatchingInput(ArrowKey arrowKey, int index)
@@ -21,11 +21,18 @@ public class Rhythm : MonoBehaviour
 
     public bool IsEndOfStep(int index)
     {
-        var isEndOfStep = _inNoteCounter > notes[index].inputSequence.Count;
+        if (index >= notes.Count) return false;
+        
+        var isEndOfStep = _inNoteCounter >= notes[index].inputSequence.Count;
         
         if (isEndOfStep)
             _inNoteCounter = 0;
 
         return isEndOfStep;
+    }
+
+    public bool IsEndOfRhythm(int index)
+    {
+        return index >= notes.Count;
     }
 }
