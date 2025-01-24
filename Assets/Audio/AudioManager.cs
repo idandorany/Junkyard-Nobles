@@ -19,12 +19,14 @@ namespace Audio
         {
             gameManager.OnInputSuccession += PlayPopBubbleAudio;
             gameManager.OnRhythmSectionWin += PlayRhythmAudio;
+            gameManager.OnNoteSuccession += PlayNoteAudio;
         }
 
         private void OnDisable()
         {
             gameManager.OnInputSuccession -= PlayPopBubbleAudio;
             gameManager.OnRhythmSectionWin -= PlayRhythmAudio;
+            gameManager.OnNoteSuccession -= PlayNoteAudio;
         }
 
         public void PlayPopBubbleAudio()
@@ -37,6 +39,11 @@ namespace Audio
             if (index >= rhythms.Length) return;
             
             audioSource.PlayOneShot(rhythms[index]);
+        }
+
+        public void PlayNoteAudio(AudioClip noteClip)
+        {
+            audioSource.PlayOneShot(noteClip);
         }
     }
 }
