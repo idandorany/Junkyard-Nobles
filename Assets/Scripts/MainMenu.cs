@@ -4,6 +4,6 @@ public class MainMenu : MonoBehaviour
 {
  public void Playgame()
     {
-        SceneManager.LoadSceneAsync("Main Game");
+        SceneManager.LoadSceneAsync("idan");
     }
 }
