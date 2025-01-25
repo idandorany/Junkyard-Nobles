@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/Note Containers.meta
+guid: 3fc84d5ae75951640ad21011ab91853f
+========
 guid: 4115896b9590c65448a5e2b3453a96e1
+>>>>>>>> main:Assets/Audio.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
