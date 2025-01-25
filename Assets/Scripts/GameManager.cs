@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour
         {
             OnInputSuccession?.Invoke();
             var arrowTrigger = _arrows.Dequeue();
+            arrowTrigger.PlayParticleEffect();
             Destroy(arrowTrigger.gameObject);
         }
         else
@@ -141,6 +142,7 @@ public class GameManager : MonoBehaviour
         {
             OnInputSuccession?.Invoke();
             var arrowTrigger = _arrows.Dequeue();
+            arrowTrigger.PlayParticleEffect();
             Destroy(arrowTrigger.gameObject);
         }
         else
@@ -173,6 +175,7 @@ public class GameManager : MonoBehaviour
         {
             OnInputSuccession?.Invoke();
             var arrowTrigger = _arrows.Dequeue();
+            arrowTrigger.PlayParticleEffect();
             Destroy(arrowTrigger.gameObject);
         }
         else
@@ -205,6 +208,7 @@ public class GameManager : MonoBehaviour
         {
             OnInputSuccession?.Invoke();
             var arrowTrigger = _arrows.Dequeue();
+            arrowTrigger.PlayParticleEffect();
             Destroy(arrowTrigger.gameObject);
         }
         else

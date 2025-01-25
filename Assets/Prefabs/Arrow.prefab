@@ -111,3 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowKey: 1
+  _particleSystemPrefab: {fileID: 8263941031663757398, guid: 145283a2af301824bb199d5a162af196, type: 3}

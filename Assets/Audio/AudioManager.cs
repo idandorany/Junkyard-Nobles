@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,8 +32,12 @@ namespace Audio
 
         public void PlayPopBubbleAudio()
         {
-            if(popUpBubble)
+            if (popUpBubble)
+            {
+                audioSource.volume = 0.6f;
                 audioSource.PlayOneShot(popUpBubble);
+                audioSource.volume = 1f;
+            }
         }
 
         public void PlayRhythmAudio(int index)

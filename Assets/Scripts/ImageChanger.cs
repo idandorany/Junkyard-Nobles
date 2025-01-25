@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -21,12 +22,12 @@ public class ImageChanger : MonoBehaviour
 
     private void OnEnable()
     {
-        gameManager.OnRhythmSectionWin += ImagerChangerCalled;
+        gameManager.OnRhythmSectionWin += OnLevelPass;
     }
 
     private void OnDisable()
     {
-        gameManager.OnRhythmSectionWin -= ImagerChangerCalled;
+        gameManager.OnRhythmSectionWin -= OnLevelPass;
     }
 
     private void Start()
@@ -46,6 +47,12 @@ public class ImageChanger : MonoBehaviour
         yield return new WaitForSeconds(3);//sprite display duration
         OnCinematicFinished?.Invoke();
         ++_imageListIndex;
+    }
+
+    private IEnumerator PassLevel()
+    {
+        yield return new WaitForSeconds(12.0f);
+        ImagerChangerCalled(0);
     }
     
     private void StartCinematic()
@@ -67,5 +74,10 @@ public class ImageChanger : MonoBehaviour
     private void ImagerChangerCalled(int index)
     {
         StartCoroutine(StartCinematicSequence());
+    }
+
+    private void OnLevelPass(int index)
+    {
+        StartCoroutine(PassLevel());
     }
 }
