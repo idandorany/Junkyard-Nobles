@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ThoughtBubbleController : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class ThoughtBubbleController : MonoBehaviour
     [SerializeField] private GameObject trackOfNotes;
 
     [SerializeField] private float speedOfTrackScroll;
+    [SerializeField] private Transform resetTrackPosition;
 
     private void OnEnable()
     {
@@ -20,6 +22,6 @@ public class ThoughtBubbleController : MonoBehaviour
 
     public void RestartTrack()
     {
-        trackOfNotes.transform.position = new Vector3(1118, 3, 0);
+        trackOfNotes.transform.position = resetTrackPosition.position;
     }
 }
