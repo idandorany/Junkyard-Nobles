@@ -4,63 +4,68 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class ImageChanger : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private List<Sprite> _sprites;
-    private int _imageListIndex = 0;
-    [SerializeField] private VideoPlayer _videoPlayer;
-    [SerializeField] private GameObject _imageObject;
-    [SerializeField] private Image _image;
+    [SerializeField] private List<Sprite> sprites;
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private GameObject imageObject;
+    [SerializeField] private Image image;
+    private int _imageListIndex;
 
     private event UnityAction OnCinematicFinished;
-    
-    private void Start()
+
+    private void OnEnable()
     {
         gameManager.OnRhythmSectionWin += ImagerChangerCalled;
-        StopImageDisplay();
     }
 
-    void Update()
+    private void OnDisable()
     {
+        gameManager.OnRhythmSectionWin -= ImagerChangerCalled;
+    }
+
+    private void Start()
+    {
+        StopImageDisplay();
+        ImagerChangerCalled(0);
     }
 
     private IEnumerator StartCinematicSequence()
     {
-        _videoPlayer.Prepare();
+        videoPlayer.Prepare();
         yield return new WaitForSeconds(1.5f);
         StopImageDisplay();
         StartCinematic();
-        yield return new WaitForSeconds((float)_videoPlayer.length - 0.3f);//Video duration variable
+        yield return new WaitForSeconds((float)videoPlayer.length - 0.3f);//Video duration variable
         StartImageDisplay();
         yield return new WaitForSeconds(3);//sprite display duration
         OnCinematicFinished?.Invoke();
+        ++_imageListIndex;
     }
     
     private void StartCinematic()
     {
-        _videoPlayer.Play();
+        videoPlayer.Play();
     }
 
     private void StartImageDisplay()
     {
-        _imageObject.SetActive(true);
-        _image.sprite = _sprites[_imageListIndex];
+        imageObject.SetActive(true);
+        image.sprite = sprites[_imageListIndex];
     }
 
     private void StopImageDisplay()
     {
-        _imageObject.SetActive(false);
+        imageObject.SetActive(false);
     }
 
     private void ImagerChangerCalled(int index)
     {
-        _imageListIndex = index;
         StartCoroutine(StartCinematicSequence());
     }
-
-    
 }
