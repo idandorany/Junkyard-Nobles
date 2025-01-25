@@ -9,7 +9,7 @@ using UnityEngine.Video;
 
 public class ImageChanger : MonoBehaviour
 {
-
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private List<Sprite> _sprites;
     private int _imageListIndex = 0;
     [SerializeField] private VideoPlayer _videoPlayer;
@@ -20,8 +20,8 @@ public class ImageChanger : MonoBehaviour
     
     private void Start()
     {
+        gameManager.OnRhythmSectionWin += ImagerChangerCalled;
         StopImageDisplay();
-        StartCoroutine(StartCinematicSequence());
     }
 
     void Update()
